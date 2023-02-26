@@ -1,0 +1,26 @@
+{
+  "name": "connect-4",
+  "version": "1.0.0",
+  "description": "A player connect 4 game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server/server.js --ignore client",
+    "dev": "concurrently \"cd server && nodemon\" \"cd client && npm start\"",
+    "install": "cd server && npm i && cd ../client && npm i",
+    "seed": "cd server && npm run seed",
+    "build": "cd client && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BGrowcott/connect-4.git"
+  },
+  "author": "Ben Growcott",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BGrowcott/connect-4/issues"
+  },
+  "homepage": "https://github.com/BGrowcott/connect-4#readme",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
