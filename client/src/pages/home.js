@@ -1,7 +1,10 @@
+import React from "react";
+import GameBoard from "../components/gameComponents/GameBoard";
+
 const Home = () => {
   return (
     <section>
-      <h2>Hello World</h2>
+      <GameBoard/>
     </section>
   );
 }
