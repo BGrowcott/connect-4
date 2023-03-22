@@ -3,14 +3,13 @@ const { signToken } = require("../../utils/auth");
 
 module.exports = {
     async login(req, res) {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
         try {
-            const user = await User.findOne({ email });
-            console.log(user);
+            const user = await User.findOne({ username });
+            
             if (!user) {
                 throw new Error("Incorrect credentials");
             }
-
             const correctPw = await user.isCorrectPassword(password);
 
             if (!correctPw) {
@@ -21,18 +20,19 @@ module.exports = {
 
             res.json(token);
         } catch (error) {
-            res.json(500).json(error);
+            res.status(500).json({message: error.message});
         }
     },
     async signup(req, res) {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
 
         try {
-            const user = await User.create({ email, password });
+            const user = await User.create({ username, password });
             const token = signToken(user);
             res.json(token);
         } catch (error) {
-            res.json(500).json(error);
+            console.log(error)
+            res.status(500).json(error);
         }
     },
 };

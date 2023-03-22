@@ -4,10 +4,11 @@ import { useState } from "react";
 
 const LoginForm = () => {
     const emptyForm = {
-        email: "",
+        username: "",
         password: "",
     };
     const [formState, setFormState] = useState(emptyForm);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const submitForm = async (event) => {
         event.preventDefault();
@@ -16,10 +17,16 @@ const LoginForm = () => {
                 method: "POST",
                 body: JSON.stringify(formState),
             });
+
             const data = await response.json();
+
+            if (response.status !== 200) {
+                throw data;
+            }
+
             AuthService.login(data);
         } catch (error) {
-            console.log(error);
+            setErrorMessage(error.message);
         }
     };
 
@@ -35,15 +42,15 @@ const LoginForm = () => {
         <div>
             <h2>Log In</h2>
             <form onSubmit={submitForm} className="form">
-                <label className="form-label" htmlFor="email">
-                    Email:
+                <label className="form-label" htmlFor="username">
+                    Username:
                 </label>
                 <input
                     className="form-control"
-                    type="email"
-                    name="email"
+                    type="username"
+                    name="username"
                     onChange={handleFormInput}
-                    value={formState ? formState.email : ""}
+                    value={formState ? formState.username : ""}
                 ></input>
                 <label className="form-label" htmlFor="password">
                     Password:
@@ -55,8 +62,11 @@ const LoginForm = () => {
                     onChange={handleFormInput}
                     value={formState ? formState.password : ""}
                 ></input>
-                <button type="submit" className="mt-2 btn btn-primary">Login</button>
+                <button type="submit" className="mt-2 btn btn-primary">
+                    Login
+                </button>
             </form>
+            <p>{errorMessage}</p>
         </div>
     );
 };
