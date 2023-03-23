@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Loading from "../components/utils/loading";
 import fetchWithJWT from "../utils/fetchWithJWT";
 

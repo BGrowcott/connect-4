@@ -24,6 +24,10 @@ const matchSchema = new Schema(
                 [0, 0, 0, 0, 0, 0, 0],
             ],
         },
+        currentTurn: {
+           type: Schema.Types.ObjectId,
+           required: true,
+        },
         winnerId: {
             type: Schema.Types.ObjectId,
             ref: "user",

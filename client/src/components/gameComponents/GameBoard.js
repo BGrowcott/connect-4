@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { json } from "react-router-dom";
+import AuthService from "../../utils/AuthService";
+import fetchWithJWT from "../../utils/fetchWithJWT";
 
-function GameBoard() {
+function GameBoard({ game }) {
     const board = [
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
@@ -10,10 +13,41 @@ function GameBoard() {
         [0, 0, 0, 0, 0, 0, 0],
     ];
 
-    const [boardState, setBoardState] = useState(board);
-    const [playerTurn, setPlayerTurn] = useState(1);
+    const [boardState, setBoardState] = useState(game.boardState || board);
+    const [currentTurnPlayer, setCurrentTurnPlayer] = useState(
+        game.currentTurn
+    );
+    const [playerTurn, setPlayerTurn] = useState();
+    const [gameWinner, setGameWinner] = useState(game.winnerId || undefined);
 
-    function placePiece(event) {
+    useEffect(() => {
+        setBoardState([...game.boardState]);
+        setCurrentTurnPlayer(game.currentTurn);
+    }, [game]);
+
+    useEffect(() => {
+        if (currentTurnPlayer === game.player1Id._id) {
+            setPlayerTurn(1);
+        } else {
+            setPlayerTurn(2);
+        }
+    }, [game]);
+
+    useEffect(() => {
+        if (playerTurn === 1) {
+            setCurrentTurnPlayer(game.player1Id._id);
+        } else {
+            setCurrentTurnPlayer(game.player2Id._id);
+        }
+    }, [playerTurn]);
+
+    async function placePiece(event) {
+        if (
+            AuthService.getProfile().data._id !== currentTurnPlayer ||
+            gameWinner
+        ) {
+            return;
+        }
         const selectedColumn = Number(event.target.dataset.column);
         let finalPosition;
         for (let i = boardState.length - 1; i >= 0; i--) {
@@ -23,15 +57,37 @@ function GameBoard() {
                 break;
             }
         }
+
         if (!finalPosition) return;
 
         setBoardState([...boardState]);
 
         if (checkVictory(playerTurn, finalPosition)) {
-            window.alert(`Player ${playerTurn} wins!`);
+            setGameWinner(currentTurnPlayer);
+            await fetchWithJWT("/api/match/winner", {
+                method: "PUT",
+                body: JSON.stringify({
+                    winnerId: currentTurnPlayer,
+                    gameId: game._id,
+                }),
+            });
         }
 
+        const currentTurn =
+            game.player1Id._id === currentTurnPlayer
+                ? game.player2Id._id
+                : game.player1Id._id;
+
         setPlayerTurn(playerTurn === 1 ? 2 : 1);
+
+        fetchWithJWT("/api/match", {
+            method: "PUT",
+            body: JSON.stringify({
+                id: game._id,
+                boardState: [...boardState],
+                currentTurn,
+            }),
+        });
     }
 
     function checkVictory(player, position) {
@@ -87,7 +143,7 @@ function GameBoard() {
                 }
             } else diagnalRowLeft = 0;
         }
-        
+
         return false;
     }
 
@@ -139,26 +195,52 @@ function GameBoard() {
 
     return (
         <div>
-            <p>Player {playerTurn}'s turn</p>       
-            <div className="gameContainer">
-                {boardState.map((row, rowIndex) => {
-                    return row.map((gameHole, columnIndex) => {
-                        return (
-                            <div key={`${rowIndex}, ${columnIndex}`} className="gameSquare">
+            <div>
+                {gameWinner ? (
+                    <div className="winnerBox">
+                        Winner{" "}
+                        {gameWinner === game.player1Id._id
+                            ? game.player1Id.username
+                            : game.player2Id.username}
+                        !
+                    </div>
+                ) : null}
+                <p>
+                    {currentTurnPlayer === game.player1Id._id
+                        ? game.player1Id.username
+                        : game.player2Id.username}
+                    's turn
+                </p>
+                <div className="gameContainer p-2">
+                    {boardState.map((row, rowIndex) => {
+                        return row.map((gameHole, columnIndex) => {
+                            return (
                                 <div
-                                    style={{
-                                        backgroundColor:
-                                            boardState[rowIndex][columnIndex] === 0 ? "aliceblue" : 
-                                            boardState[rowIndex][columnIndex] === 1 ? "red" : "blue",
-                                    }}
-                                    className="gameHole"
-                                    data-column={columnIndex}
-                                    onClick={placePiece}
-                                ></div>
-                            </div>
-                        );
-                    });
-                })}
+                                    key={`${rowIndex}, ${columnIndex}`}
+                                    className="gameSquare"
+                                >
+                                    <div
+                                        style={{
+                                            backgroundColor:
+                                                boardState[rowIndex][
+                                                    columnIndex
+                                                ] === 0
+                                                    ? "aliceblue"
+                                                    : boardState[rowIndex][
+                                                          columnIndex
+                                                      ] === 1
+                                                    ? "red"
+                                                    : "blue",
+                                        }}
+                                        className="gameHole"
+                                        data-column={columnIndex}
+                                        onClick={placePiece}
+                                    ></div>
+                                </div>
+                            );
+                        });
+                    })}
+                </div>
             </div>
         </div>
     );

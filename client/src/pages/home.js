@@ -4,17 +4,9 @@ import fetchWithJWT from "../utils/fetchWithJWT";
 
 const Home = () => {
 
-  async function apiTest() {
-    const response = await fetchWithJWT("/api/match");
-    const data = await response.json();
-    console.log(data)
-  }
-
-  apiTest();
-
   return (
     <section>
-      <GameBoard/>
+      <h1>Hello World</h1>
     </section>
   );
 }

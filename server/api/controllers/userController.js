@@ -28,6 +28,7 @@ module.exports = {
 
         try {
             const user = await User.create({ username, password });
+            console.log(user)
             const token = signToken(user);
             res.json(token);
         } catch (error) {
@@ -35,4 +36,8 @@ module.exports = {
             res.status(500).json(error);
         }
     },
+    async allUsers (req,res) {
+        const users = await User.find({}).select('username');
+        res.json(users)
+    }
 };

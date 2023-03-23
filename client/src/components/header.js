@@ -19,9 +19,9 @@ const Header = () => {
                 <div className="d-flex align-items-center">
                     <Link
                         className="text-white text-decoration-none mx-2"
-                        to={"/example"}
+                        to={"/mygames"}
                     >
-                        Example Page
+                        My Games
                     </Link>
                     {AuthService.loggedIn() ? (
                         <button
