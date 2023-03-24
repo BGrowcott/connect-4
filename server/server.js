@@ -13,6 +13,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(authMiddleware);
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(routes);
 app.use(
     session({
@@ -32,8 +33,6 @@ app.use(
         }
     })
 );
-
-app.use(express.static(path.join(__dirname, "../client/build")));
 
 db.once('open', () => {
     app.listen(PORT, () => {
