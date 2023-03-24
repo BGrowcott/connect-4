@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthService from "../utils/AuthService";
 import fetchWithJWT from "../utils/fetchWithJWT";
 
@@ -53,12 +53,14 @@ const MyGames = () => {
             <div>
                 <div>
                     <h2>Current Games</h2>
-                    <div className="row">
+                    <div className="row g-2">
                         {myMatches?.map(match => {
                             return (
                                 <div key={match._id} className="col-12 col-sm-6 col-md-4">
-                                    <div>
-                                        <h3>{match.player1Id.username} vs {match.player2Id.username}</h3>
+                                    <div className="bg-light p-2">
+                                    <Link to={`/mygames/${match._id}`}>
+                                        <h3><span className="text-uppercase">{match.player1Id.username}</span> vs <span className="text-uppercase">{match.player2Id.username}</span></h3>
+                                    </Link>
                                     </div>
                                 </div>
                             )
