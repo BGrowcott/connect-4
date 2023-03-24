@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A player connect 4 game",
   "main": "server.js",
+  "engines": {
+    "node": "18.x",
+    "npm": "8.x"
+  },
   "scripts": {
     "start": "node server/server.js --ignore client",
     "dev": "concurrently \"cd server && nodemon\" \"cd client && npm start\"",
